@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Create an account{% endblock %}
+{% block content %}
+ <h1>Create an account</h1>
+ <p>Please, sign up using the following form:</p>
+
+ <form id="personForm" enctype="multipart/form-data" class="ui form " method="post" data-skills-url="{% url 'load_skills' %}" novalidate >
+ {% csrf_token %}
+  {{user_form.as_p}}
+  {{profile_form.as_p}}
+   <button class="ui button primary">Register</button>
+ </form>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_work_area").change(function () {
+      console.log('Work area changed')
+      var url = $("#personForm").attr("data-skills-url");  // get the url of the `load_cities` view
+
+      var chosen_areaId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(chosen_areaId)
+
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'area': chosen_areaId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_skills").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+
+{% endblock %}

@@ -1,0 +1,32 @@
+<div class="ui attached stackable menu">
+  <div class="ui container">
+    <a href="{% url 'dashboard'%}" class="item">
+      <i class="home icon"></i> Home
+    </a>
+    <a href="{% url 'profiles_list_view' %}" class="item">
+      <i class="user plus icon"></i> Grow Network
+    </a>
+      <a class="item">
+      <i class="briefcase icon"></i> Find jobs
+    </a>
+    <a class="item">
+      <i class="mail icon"></i> Messages
+    </a>
+      <a href="{% url 'connection_request_view' %}" class="item">
+      <i class="bell icon"></i> Notifications
+    </a>
+
+    <div class="right item">
+      <div class="ui input"><input type="text" placeholder="Search..."></div>
+    </div>
+       <div class="ui simple dropdown item">
+      More
+      <i class="dropdown icon"></i>
+      <div class="menu">
+        <a href="{% url 'profile_view' user.id %}" class="item"><i class="edit icon"></i> Profile</a>
+        <a class="item"><i class="globe icon"></i> Choose Language</a>
+        <a href="{% url "logout" %}" class="item"><i class="settings icon"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+</div>

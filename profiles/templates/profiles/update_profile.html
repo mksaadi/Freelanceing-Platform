@@ -1,0 +1,54 @@
+{%extends 'base.html'%}
+{%block title%}
+profile
+{%endblock title%}
+
+
+{%block content%}
+<!-- modal -->
+
+      <div class="ui header">Provide Update Info</div>
+       <form id="personForm" action="" method="POST" class="ui form" enctype="multipart/form-data"  data-skills-url="{% url 'load_skills' %}" novalidate>
+      {% csrf_token %}
+       {{form.as_p}}
+             </form>
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.js"
+  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
+  <script>
+    $("#id_work_area").change(function () {
+      console.log('Work area changed')
+      var url = $("#personForm").attr("data-skills-url");  // get the url of the `load_cities` view
+
+      var chosen_areaId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(chosen_areaId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'area': chosen_areaId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          console.log("Success")
+          $("#id_skills").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+     </div>
+
+  <div class="actions">
+    <button type="submit" class="ui positive right labeled icon button">
+     Update
+      <i class="checkmark icon"></i>
+    </button>
+
+
+  </div>
+
+
+
+
+
+{%endblock content%}

@@ -1,0 +1,37 @@
+
+.my_password_change_form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction:column;
+    top: 50%;
+    left: 50%;
+    margin-top: 10em; /*set to a negative number 1/2 of your height*/
+    margin-left: 10em; /*set to a negative number 1/2 of your width*/
+}
+.my_form{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    width:30em;
+    height:18em;
+    margin-top: 10em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+    border: 1px solid #ccc;
+    background-color: #f3f3f3;
+
+}
+.form_text{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction:column;
+
+}
+

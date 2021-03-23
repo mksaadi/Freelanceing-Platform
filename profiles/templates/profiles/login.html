@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log-in(profiles){% endblock %}
+{% block content %}
+
+<div class="" >
+    <h1>Log-in</h1>
+    <p>Please, use the following form to log-in:</p>
+</div>
+
+ <form  class=""  method="post">
+ {{ form.as_table }}
+ {% csrf_token %}
+ <button class="ui inverted green button"> Login</button>
+ </form>
+{% endblock %}

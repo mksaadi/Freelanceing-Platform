@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Create an account{% endblock %}
+{% block content %}
+ <h1>Create an account</h1>
+ <p>Please, sign up using the following form:</p>
+
+ <form enctype="multipart/form-data" class="ui form " method="post">
+
+  {% csrf_token %}
+  {{user_form.as_p}}
+  {{profile_form.as_p}}
+ <button class="ui button primary">Register</button>
+ </form>
+{% endblock %}

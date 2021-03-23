@@ -1,0 +1,108 @@
+{%extends 'base.html'%}
+{%block title%}
+profile
+{%endblock title%}
+
+{%block content%}
+{% include 'profiles/nav.html' %}
+<!-- modal -->
+
+
+<div class="ui modal">
+  <i class="close icon"></i>
+  <div class="header">
+   Update Profile
+  </div>
+  <div class="image content">
+    <div class="ui medium image">
+      <img src="{{profile.image_profile.url}}">
+    </div>
+    <div class="description">
+      <div class="ui header">Provide Update Info</div>
+       <form id="personForm" action="" method="POST" class="ui form" enctype="multipart/form-data" data-skills-url="{% url 'load_skills' %}" novalidate >
+      {% csrf_token %}
+       {{form.as_p}}
+     </div>
+  </div>
+  <div class="actions">
+    <button type="submit" class="ui positive right labeled icon button">
+     Update
+      <i class="checkmark icon"></i>
+    </button>
+      </form>
+      <script>
+    $("#id_work_area").change(function () {
+      console.log('Work area changed')
+      var url = $("#personForm").attr("data-skills-url");  // get the url of the `load_cities` view
+
+      var chosen_areaId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(chosen_areaId)
+
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'area': chosen_areaId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_skills").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+  </div>
+</div>
+
+<!-- modal -->
+
+
+
+
+<!-- profile info -->
+
+<div class="ui segment">
+        {% if confirm %}
+                    <div class="ui green message">Profile Updated!</div>
+        {%endif%}
+      <h3>Profile : {{profile.user.username}}</h3>
+
+      <h3>Occupation : {{profile.occupation}}</h3>
+      <h3>Education : {{profile.education}}</h3>
+
+    <div class="ui centered card">
+
+                <img  class="ui centered medium circular image" src="{{profile.dp.url}}">
+          <div class="content">
+            <a class="header">{{profile.user.get_full_name}}</a>
+          </div>
+        </div>
+    </div>
+   <h3>Bio  : {{profile.bio}}</h3>
+   <h3>Work Area :  {{profile.work_area}}</h3>
+   <h3>Skills :  </h3>
+
+     {% for e in profile.get_skills %}
+                <ul>
+                    <h4>{{e.skill}}</h4>
+                 </ul>
+       {%endfor%}
+    <h3> Post Number : {{profile.get_posts_no}} </h3>
+    <h3> Number of Connected People  : {{profile.get_number_of_connections}} </h3>
+    <a href="{% url "connection_list" %}"> See your Connections </a>
+    <h3> Total likes given : {{profile.get_likes_given_no}} </h3>
+    <h3> Total likes received  : {{profile.get_likes_received_no}} </h3>
+   <a href="{% url "posts:post_view" %}"> See your posts </a>
+   <br>
+   <br>
+   <br>
+
+<!-- profile info -->
+
+<br>
+
+<button class="ui secondary button" id="model-btn">
+ Update Profile
+</button>
+
+{%endblock content%}

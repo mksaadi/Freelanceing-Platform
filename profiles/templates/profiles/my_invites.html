@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Connection Requests{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+    {% if is_empty %}
+        <h3>No New Notifications</h3>
+    {%endif%}
+  <ul>
+      {% for item in connections_requests %}
+         <div class="ui segment">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="three wide column">
+                        <img  class="ui small image" src="{{item.dp.url}}">
+                    </div>
+                     <div class="thirteen wide column">
+                            <h3>{{item.user}}</h3>
+                         <p>{{item.bio}}</p>
+                         <a href="{% url 'ProfileDetailView' item.id %}">
+                             <button class="ui primary button">See Profile</button>
+                         </a>
+                          <form action="{% url "approve_connection" %}" class="ui form" method="POST">
+                                     {% csrf_token %}
+                             <input type="hidden" name="profile_pk" value="{{item.pk}}">
+                                            <button class="ui positive  button">
+                                            <i class="user plus icon"></i>
+                                           Approve
+                                        </button>
+
+                              </form>
+
+                             <form action="{% url "remove_connection" %}" class="ui form" method="POST">
+                                     {% csrf_token %}
+                                    <input type="hidden" name="profile_pk" value="{{item.pk}}">
+                                            <button class="ui Negative  button">
+                                            <i class="user minus icon"></i>
+                                           Decline
+                                        </button>
+
+                              </form>
+
+                    </div>
+                </div>
+            </div>
+         </div>
+      {% endfor %}
+  </ul>
+{% endblock content%}

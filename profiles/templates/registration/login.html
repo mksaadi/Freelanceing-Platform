@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Log-in(registration){% endblock %}
+{% block content %}
+
+ {% if form.errors %}
+ <p>
+ Your username and password didn't match.
+ Please try again.
+ </p>
+ {% else %}
+ <div class="form_text">
+  <h1>Log-in</h1>
+<p>Please, use the following form to log-in. If you don't have an
+account <a href="{% url "register" %}">register here</a></p>
+  <p> If you want to be a freelancer  <a href="{% url "register_freelancer" %}">register here</a></p>
+   <p> If you want to be a Client  <a href="{% url "register_client" %}">register here</a></p>
+ </div>
+
+ {% endif %}
+ <div class="login-form">
+
+     <form  class="ui form" action="{% url 'login' %}"   method="POST">
+
+ {% csrf_token %}
+      {{ form.as_p }}
+       {{ form.media.js }}
+         <input type="hidden" name="next" value="{{ next }}" />
+ <button class="ui inverted green button"> Login</button>
+
+
+
+ </form>
+
+ <<a href="{% url "password_reset" %}">Reset Password </a>
+ </div>
+{% endblock %}

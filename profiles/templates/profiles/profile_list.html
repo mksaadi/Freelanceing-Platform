@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Profiles{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+<h3>Suggested connections for {{profile.user.username}}</h3>
+
+      {% for item in qs %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column">
+                            <img class="ui small  image " src="{{item.dp.url}}">
+                        </div>
+                        <div class="thirteen wide column">
+                                <h3>{{item.user}}</h3>
+                                <p>{{item.bio}}</p>
+                            <a href="{% url 'ProfileDetailView' item.id %}">
+                                 <button class="ui primary button">See Profile</button>
+                            </a>
+
+                            <br>
+                            <br>
+                     {% if item.user not in con_receiver and item.user not in con_sender%}
+                        <form action="{% url "send_connection" %}" class="ui form" method="POST">
+                                {% csrf_token %}
+                            <input type="hidden" name="profile_pk" value="{{item.pk}}">
+
+                                <button type="submit" class="ui positive basic button">
+                                    <i class="user plus  icon"></i>
+                                    Connect
+                                </button>
+
+                            <br>
+                            <br>
+                        </form>
+                             {%endif%}
+
+
+                             {% if item.user  in con_sender and request.user not in item.get_connections %}
+                              <form action="{% url "approve_connection" %}" class="ui form" method="POST">
+                                     {% csrf_token %}
+                             <input type="hidden" name="profile_pk" value="{{item.pk}}">
+                                            <button class="ui positive  button">
+                                            <i class="user plus icon"></i>
+                                           Approve
+                                        </button>
+                                  <br>
+                                  <br>
+
+                              </form>
+
+                            {%endif%}
+
+                          {% if item.user  in con_receiver and request.user not in item.get_connections %}
+                                 <button class="ui disabled  button">
+                                    <i class="user icon"></i>
+                                    Wating for Approval
+                                </button>
+                            <br>
+                            <form action="{%url "remove_connection" %}" class="ui form" method="POST">
+                                {% csrf_token %}
+                                     <input type="hidden" name="profile_pk" value="{{item.pk}}">
+
+                                     <button class="ui negative button">
+                                         <i class="minus sqare icon">
+
+                                         </i>
+                                         Undo Request
+                                     </button>
+                            <br>
+
+                            </form>
+
+
+
+
+
+                          {%endif%}
+
+                         <form action="{%url "remove_connection" %}" class="ui form" method="POST">
+                                {% csrf_token %}
+                             <input type="hidden" name="profile_pk" value="{{item.pk}}">
+                              {%if request.user in item.get_connections %}
+                             <button class="ui negative button">
+                                 <i class="minus sqare icon">
+
+                                 </i>
+                                 Remove connection
+                             </button>
+                            <br>
+                              {% endif %}
+                        </form>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+
+      {% endfor %}
+
+{% endblock content%}

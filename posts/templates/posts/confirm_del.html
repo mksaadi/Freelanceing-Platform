@@ -1,0 +1,22 @@
+{% if messages %}
+        {% for message in messages %}
+            {% if 'warning' in message.tags %}
+                <div class='ui negative message'>
+                    <div class="header">
+                        {{message}}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if not messages %}
+        <div class="ui segment">
+            <h3>Delete post?</h3>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <p>Are you sure you want to delete the post?</p>
+                <button type='submit'>Submit</button>
+            </form>
+        </div>
+    {% endif %}

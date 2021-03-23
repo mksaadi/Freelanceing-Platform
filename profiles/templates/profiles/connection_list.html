@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Connections{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+<h3>Connections for {{profile.user.username}}</h3>
+
+      {% for item in connections %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column">
+                            <img class="ui small  image " src="{{item.dp.url}}">
+                        </div>
+                        <div class="thirteen wide column">
+                                <h3>{{item.user}}</h3>
+                                <p>{{item.bio}}</p>
+                            <a href="{% url 'ProfileDetailView' item.id %}">
+                               <button class="ui primary button">See Profile</button>
+                                 </a>
+
+                         <form action="{%url "remove_connection" %}" class="ui form" method="POST">
+                                {% csrf_token %}
+                             <input type="hidden" name="profile_pk" value="{{item.pk}}">
+                              {%if request.user in item.get_connections %}
+                             <button class="ui negative button">
+                                 <i class="minus sqare icon">
+
+                                 </i>
+                                 Remove connection
+                             </button>
+                              {% endif %}
+                        </form>
+
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+
+      {% endfor %}
+
+{% endblock content%}

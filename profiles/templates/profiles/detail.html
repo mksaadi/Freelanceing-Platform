@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Detail{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+ <h1>Profile Detail</h1>
+  <div class="ui grid">
+      <div class="row">
+          <div class="five wide column">
+                <img class="ui medium rounded imgae" src="{{object.dp.url}}">
+              <h3>{{object.user}}</h3>
+              <div class="ui vertical fluid menu">
+                 <div class="item">
+                     Posts
+                     <div class="ui label"> {{object.get_posts_no}}</div>
+                 </div>
+                  <div class="item">
+                     Likes Received <div class="ui label"> {{object.get_likes_received_no}}</div>
+                 </div>
+                   <div class="item">
+                     Connections <div class="ui label"> {{object.get_number_of_connections}}</div>
+                 </div>
+
+
+              </div>
+          </div>
+
+          <div class="eleven wide column">
+                {% if not is_empty %}
+                        {% for post in posts %}
+                            <div class="segment ui fluid">
+                                {{post.content}}
+                            </div>
+                        {% endfor%}
+
+                {% else %}
+                <p>No posts to show!</p>
+               {% endif %}
+          </div>
+
+      </div>
+  </div>
+{% endblock %}
