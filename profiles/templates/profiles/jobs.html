@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Jobs for you{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+
+    <div></div>
+ <div class="ui grid">
+     <p>Available jobs in your Area of expertise :</p>
+           <div class="eleven wide column">
+                {% for job in related_jobs %}
+
+                   <div class="ui fluid card">
+                             <div class="content" >
+
+                                   <img class="ui avatar image" src={{job.author.dp.url}}>
+                                 {{ job.author.user }} - {{ job.created|timesince}} ago
+
+                            </div>
+                                 <div class="ui fluid image">
+                                {% if job.image %}
+                                    <img src={{job.image.url}}>
+                                {% endif %}
+                                </div>
+
+
+
+                                 <div class="content">
+                <p> <strong> Title :</strong>  {{ job.title }}</p>
+                <p> <strong> Description :</strong>  {{ job.description }}</p>
+                <p> <strong> Salary :</strong>  {{ job.salary }}</p>
+                <p> <strong> Skills Needed  :</strong>
+                    <ul>
+                              {% for skill in job.get_skills %}
+                                     <li>{{ skill.skill }}</li>
+                               {% endfor %}
+                    </ul>
+
+                </p>
+
+
+                                     <p></p>
+                <div class="right floated">
+                    <form action="" method="POST" class='like-form' id='{{job.id}}'>
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{job.id}}>
+
+                            <button type="submit" class="ui button like-btn{{job.id}}">
+                                {% if profile not in job.applicants.all %}
+                                    Apply
+                                {% else %}
+                                    Withdraw Application
+                                {% endif %}
+                            </button>
+                            <div class="ui grid">
+                                <div class="column">
+                                    <div class="like-count{{obj.id}}"> {{job.get_applicants_no}} </div>
+                                </div>
+                                <div class="column">
+                                    <p>Applied</p>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+
+                   </div>
+
+
+
+                 {% endfor %}
+             </div>
+     </div>
+</div>
+{% endblock content %}

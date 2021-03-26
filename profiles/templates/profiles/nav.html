@@ -6,9 +6,17 @@
     <a href="{% url 'profiles_list_view' %}" class="item">
       <i class="user plus icon"></i> Grow Network
     </a>
-      <a class="item">
-      <i class="briefcase icon"></i> Find jobs
-    </a>
+       {% if profile.is_freelancer %}
+                <a href="{% url 'posts:find_jobs' %}" class="item">
+                    <i class="briefcase icon"></i> Find jobs
+                </a>
+       {% else %}
+              <a href="{% url 'profiles_list_view' %}" class="item">
+                    <i class="briefcase icon"></i> Find Talents
+              </a>
+
+       {% endif %}
+
     <a class="item">
       <i class="mail icon"></i> Messages
     </a>
@@ -25,7 +33,7 @@
       <div class="menu">
         <a href="{% url 'profile_view' user.id %}" class="item"><i class="edit icon"></i> Profile</a>
         <a class="item"><i class="globe icon"></i> Choose Language</a>
-        <a href="{% url "logout" %}" class="item"><i class="settings icon"></i> Logout</a>
+        <a href="{% url 'logout' %}" class="item"><i class="settings icon"></i> Logout</a>
       </div>
     </div>
   </div>

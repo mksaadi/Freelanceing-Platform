@@ -1,7 +1,7 @@
 from django.shortcuts import render ,redirect
-from .models import Post,Like,Comment
+from .models import Post,Like,Comment, Job , JobRequest
 from profiles.models import Profile
-from .forms import PostModelForm, CommentModelForm
+from .forms import PostModelForm, CommentModelForm , JobModelForm
 from django.views.generic import UpdateView,DeleteView
 from django.urls import reverse_lazy
 from django.contrib import  messages
@@ -11,6 +11,7 @@ from django.contrib import  messages
 def post_list_view(request):
     profile = Profile.objects.get(user=request.user)
     qs = Post.objects.filter(author=profile)
+    jobs = Job.objects.filter(author = profile)
     post_form = PostModelForm()
     comment_form = CommentModelForm()
     post_added = False
@@ -41,6 +42,7 @@ def post_list_view(request):
         'comment_form': comment_form,
         'comment_added': comment_added,
         'post_added': post_added,
+        'jobs': jobs,
     }
     return render(request, 'posts/main.html', context)
 
@@ -72,12 +74,14 @@ def like_unlike_view(request):
     return redirect('posts:post_view')
 
 
+
+
 class PostDeleteView(DeleteView):
     model = Post
     template_name = 'posts/confirm_del.html'
     success_url = reverse_lazy('posts:post_view')
 
-    def get_object(self,*args,**kwargs):
+    def get_object(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
         obj = Post.objects.get(pk=pk)
 
@@ -99,3 +103,38 @@ class PostUpdateView(UpdateView):
         else:
             form.add_error(None,"You are not authorized!")
             return super().form_invalid(form)
+
+
+
+def send_request(request):
+    if request.method == 'POST':
+        pk = request.POST.get('job_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        job = Job.objects.get(pk=pk)
+        job_request = JobRequest.objects.create(sender=sender, value='Apply',job = job)
+        return redirect(request.META.get('HTTP_REFERER'))
+    return redirect('profiles:ProfileListView')
+
+
+
+
+def find_jobs(request):
+    profile = Profile.objects.get(user=request.user)
+    all_jobs = Job.objects.all()
+    related_jobs = []
+
+    for job in all_jobs:
+        if job.work_area == profile.work_area:
+            related_jobs.append(job)
+
+
+    print(related_jobs)
+    context = {
+        'profile': profile,
+        'related_jobs': related_jobs,
+        'all_jobs': all_jobs,
+    }
+    return render(request, 'profiles/jobs.html', context)
+
+

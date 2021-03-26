@@ -50,7 +50,7 @@ def dashboard(request):
             connected_posts.append(post)
 
     for job in all_jobs:
-        if job.work_area==profile.work_area:
+        if job.work_area == profile.work_area:
             related_jobs.append(job)
 
 
@@ -80,10 +80,8 @@ def dashboard(request):
             instance.description = job_form.cleaned_data.get('description')
             instance.image = job_form.cleaned_data.get('image')
             instance.work_area = job_form.cleaned_data.get('work_area')
-
-            instance.skills.set = job_form.cleaned_data.get('skills')
+            instance.skills.add(*job_form.cleaned_data.get('skills'))
             instance.salary = job_form.cleaned_data.get('salary')
-
             post_form = JobModelForm()
             job_added = True
 

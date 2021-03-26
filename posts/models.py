@@ -1,5 +1,7 @@
 from django.db import models
 from profiles.models import Profile, Skill, Area
+from django.dispatch import receiver
+from django.db.models.signals import post_save,pre_delete
 
 
 class Post(models.Model):
@@ -76,23 +78,64 @@ class Job(models.Model):
     def get_skills(self):
         return self.skills.all()
 
+    def get_applicants(self):
+        return self.applicants.all()
+
+    def get_applicants_no(self):
+        return self.applicants.all().count()
+
     def __str__(self):
-        return str(self.description[:20])
+        return str(self.title)
 
     class Meta:
         ordering = ('-created',)
 
 
-class Apply(models.Model):
+class JobRequest(models.Model):
     APPLY_CHOICES = [
-        ('Withdraw', 'Withdraw'),
         ('Apply', 'Apply'),
+        ('Approve', 'Approve'),
     ]
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE)
     value = models.CharField(choices=APPLY_CHOICES, max_length=8)
-    job = models.ForeignKey(Post, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user}-{self.job}-{self.value}"
+        return f"{self.job}-{self.value}"
+
+
+@receiver(post_save, sender=JobRequest)
+def post_save_add_applicants(sender, instance, created, **kwargs):
+    sender_ = instance.sender
+    job_ = instance.job
+    if instance.value == 'Apply':
+        job_.applicants.add(sender_)
+        job_.save()
+
+
+@receiver(post_save, sender=JobRequest)
+def post_save_add_employee(sender, instance, created, **kwargs):
+    sender_ = instance.sender
+    job_ = instance.job
+    job_author = job_.author
+    if instance.value == 'Approve':
+        job_.is_available = False
+        job_author.employees.add(sender_.user)
+        job_author.save()
+        sender_.clients.add(job_author.user)
+        sender_.save()
+        job_.save()
+
+
+@receiver(pre_delete, sender=JobRequest)
+def pre_delete_remove_request(sender, instance, **kwargs):
+    sender_ = instance.sender
+    job_ = instance.job
+    job_author = job_.author
+    job_.applicants.remove(sender_)
+    job_author.employees.remove(sender_.user)
+    sender_.clients.remove(job_author.user)
+    job_.save()

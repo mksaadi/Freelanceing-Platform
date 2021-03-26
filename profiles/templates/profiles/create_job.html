@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Create Job(profiles){% endblock %}
+{% block content %}
+
+
+
+<div class="ui segment">
+                        {% if job_added %}
+                            <div class="ui green message">Job added</div>
+                        {% endif %}
+                        <form id="personForm"  method="POST" class='ui form' enctype="multipart/form-data" data-skills-url="{% url 'load_skills' %}" novalidate>
+                            {% csrf_token %}
+                            {{job_form}}
+                            <button type='submit' name="submit_job_form" class="ui positive button w-full mt-5">Post Job</button>
+                        </form>
+
+                          <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                              <script>
+                                $("#id_work_area").change(function () {
+                                  console.log('Work area changed')
+                                  var url = $("#personForm").attr("data-skills-url");  // get the url of the `load_cities` view
+
+                                  var chosen_areaId = $(this).val();  // get the selected country ID from the HTML input
+                                  console.log(chosen_areaId)
+
+
+                                  $.ajax({                       // initialize an AJAX request
+                                    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+                                    data: {
+                                      'area': chosen_areaId       // add the country id to the GET parameters
+                                    },
+                                    success: function (data) {   // `data` is the return of the `load_cities` view function
+                                      $("#id_skills").html(data);  // replace the contents of the city input with the data that came from the server
+                                    }
+                                  });
+
+                                });
+                              </script>
+
+
+                </div>
+
+{% endblock content %}
