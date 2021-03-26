@@ -10,6 +10,8 @@ from django.db.models import Model
 from django.views.generic import ListView, UpdateView, DeleteView ,DetailView
 from django.contrib.auth.models import User
 from django.db.models import Q
+from posts.forms import PostModelForm, JobModelForm, CommentModelForm
+from posts.models import Job, Post, Comment
 
 
 def user_login(request):
@@ -35,7 +37,83 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'profiles/dashboard.html')
+    profile = Profile.objects.get(user=request.user)
+    qs = Post.objects.filter(author=profile)
+    connections = Profile.objects.get_all_friends_profile(request.user)
+    all_posts = Post.objects.all()
+    all_jobs = Job.objects.all()
+    related_jobs = []
+    connected_posts = []
+    print("Connections of profile : ", profile)
+    for post in all_posts:
+        if post.author in connections:
+            connected_posts.append(post)
+
+    for job in all_jobs:
+        if job.work_area==profile.work_area:
+            related_jobs.append(job)
+
+
+    post_form = PostModelForm()
+    job_form = JobModelForm()
+    comment_form = CommentModelForm()
+    post_added = False
+    job_added = False
+    comment_added = False
+
+    if 'submit_post_form' in request.POST:
+        post_form = PostModelForm(request.POST, request.FILES)
+        if post_form.is_valid():
+            instance = post_form.save(commit=False)
+            instance.author = profile
+            instance.save()
+            post_form = PostModelForm()
+            post_added = True
+
+    if 'submit_job_form' in request.POST:
+        job_form = JobModelForm(request.POST, request.FILES)
+        if job_form.is_valid():
+            instance = job_form.save(commit=False)
+            instance.author = profile
+            instance.save()
+            instance.title = job_form.cleaned_data.get('title')
+            instance.description = job_form.cleaned_data.get('description')
+            instance.image = job_form.cleaned_data.get('image')
+            instance.work_area = job_form.cleaned_data.get('work_area')
+
+            instance.skills.set = job_form.cleaned_data.get('skills')
+            instance.salary = job_form.cleaned_data.get('salary')
+
+            post_form = JobModelForm()
+            job_added = True
+
+
+
+    if 'submit_comment_form' in request.POST:
+        comment_form = CommentModelForm(request.POST, request.FILES)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = profile
+            comment.post = Post.objects.get(id=request.POST.get('post_id'))
+            comment.save()
+            comment_form = CommentModelForm()
+            comment_added = False
+
+    context = {
+        'qs': qs,
+        'profile': profile,
+        'post_form': post_form,
+        'comment_form': comment_form,
+        'comment_added': comment_added,
+        'post_added': post_added,
+        'connections': connections,
+        'connected_posts': connected_posts,
+        'job_form': job_form,
+        'job_added': job_added,
+        'related_jobs': related_jobs,
+
+    }
+    return render(request, 'profiles/dashboard.html', context)
 
 
 def register(request):
@@ -150,7 +228,7 @@ def connection_request_view(request):
     context = {
         'profile': profile,
         'connections_requests': connections_requests,
-        'is_empty':is_empty,
+        'is_empty': is_empty,
     }
     return render(request, 'profiles/my_invites.html', context)
 

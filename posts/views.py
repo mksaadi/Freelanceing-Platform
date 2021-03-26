@@ -13,7 +13,6 @@ def post_list_view(request):
     qs = Post.objects.filter(author=profile)
     post_form = PostModelForm()
     comment_form = CommentModelForm()
-
     post_added = False
     comment_added = False
     if 'submit_post_form' in request.POST:
@@ -38,10 +37,10 @@ def post_list_view(request):
     context = {
         'qs': qs,
         'profile': profile,
-        'post_form':post_form,
-        'comment_form':comment_form,
-        'comment_added':comment_added,
-        'post_added':post_added,
+        'post_form': post_form,
+        'comment_form': comment_form,
+        'comment_added': comment_added,
+        'post_added': post_added,
     }
     return render(request, 'posts/main.html', context)
 

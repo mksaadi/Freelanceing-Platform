@@ -7,6 +7,8 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Q
+from django.shortcuts import reverse
+
 
 
 
@@ -57,9 +59,6 @@ class ProfileManager(models.Manager):
         print(available)
         return available
 
-
-
-
     def get_all_profiles(self,me):
         profiles = Profile.objects.all().exclude(user=me)
         return profiles
@@ -92,6 +91,10 @@ class Profile(models.Model):
     spending = models.PositiveIntegerField(default=0, blank=True)
     company = models.CharField(max_length=20)
     objects = ProfileManager()
+
+    def get_absolute_url(self):
+        return reverse("profiles:ProfileDetailView", kwargs={"id":self.id})
+
 
     def get_employees(self):
         return self.employees.all()

@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from .models import Profile, Skill, Area
 
 
-
-
 class ProfileModelForm(forms.ModelForm):
     class Meta:
         model = Profile

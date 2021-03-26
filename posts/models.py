@@ -8,7 +8,7 @@ class Post(models.Model):
     liked = models.ManyToManyField(Profile, blank=True, related_name='likes')
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE,related_name='posts')
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
 
     def __str__(self):
         return str(self.content[:20])
@@ -46,8 +46,8 @@ class Comment(models.Model):
 
 class Like(models.Model):
     LIKE_CHOICES = [
-        ('Like','Like'),
-        ('Unlike','Unlike'),
+        ('Like', 'Like'),
+        ('Unlike', 'Unlike'),
     ]
     user = models.ForeignKey(Profile,on_delete=models.CASCADE)
     value = models.CharField(choices=LIKE_CHOICES, max_length=8)
@@ -60,35 +60,27 @@ class Like(models.Model):
 
 
 class Job(models.Model):
-    title = models.CharField(max_length=30,null=True)
-    description = models.TextField()
+    title = models.CharField(max_length=30, null=True)
+    description = models.TextField(max_length=50)
     image = models.ImageField(upload_to='posts', blank=True)
     applicants = models.ManyToManyField(Profile, blank=True, related_name='job_applicants')
+
     created = models.DateTimeField(auto_now=True)
     updated = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='jobs')
-    work_area = models.ForeignKey(Area, on_delete=models.CASCADE, null=True, blank=True)
-    skills = models.ManyToManyField(Skill, blank=True, related_name='job_skills')
+    work_area = models.ForeignKey(Area, on_delete=models.CASCADE, related_name='job_work_area', null=True)
+    skills = models.ManyToManyField(Skill, null=True, related_name='job_skills')
     available = models.BooleanField(default=True)
+    salary = models.PositiveIntegerField(default=0)
+
+    def get_skills(self):
+        return self.skills.all()
 
     def __str__(self):
         return str(self.description[:20])
 
-    def num_likes(self):
-        return self.liked.all().count()
-
-    def num_comments(self):
-        return self.comment_set.all().count()
-
-    def all_comments(self):
-        return self.comment_set.all()
-
-
     class Meta:
         ordering = ('-created',)
-
-    def __str__(self):
-        return str(self.title[:20])
 
 
 class Apply(models.Model):
