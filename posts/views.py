@@ -1,10 +1,12 @@
 from django.shortcuts import render ,redirect
 from .models import Post,Like,Comment, Job , JobRequest
-from profiles.models import Profile
+from profiles.models import Profile , ConnectionRequest
 from .forms import PostModelForm, CommentModelForm , JobModelForm
-from django.views.generic import UpdateView,DeleteView
+from django.views.generic import UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 from django.contrib import  messages
+from .forms import PostModelForm,JobModelForm,CommentModelForm
 # Create your views here.
 
 
@@ -45,6 +47,38 @@ def post_list_view(request):
         'jobs': jobs,
     }
     return render(request, 'posts/main.html', context)
+
+
+
+def job_list_view(request):
+    profile = Profile.objects.get(user=request.user)
+    jobs = Job.objects.filter(author=profile)
+    job_form = JobModelForm()
+    job_added = False
+
+    if 'submit_job_form' in request.POST:
+        job_form = JobModelForm(request.POST, request.FILES)
+        print(request.POST)
+        if job_form.is_valid():
+            instance = job_form.save(commit=False)
+            instance.author = profile
+            instance.save()
+            instance.title = job_form.cleaned_data.get('title')
+            instance.description = job_form.cleaned_data.get('description')
+            instance.image = job_form.cleaned_data.get('image')
+            instance.work_area = job_form.cleaned_data.get('work_area')
+            instance.skills.add(*job_form.cleaned_data.get('skills'))
+            instance.salary = job_form.cleaned_data.get('salary')
+            job_form = JobModelForm()
+            job_added = True
+
+    context = {
+        'profile': profile,
+        'job_form': job_form,
+        'job_added': job_added,
+        'jobs': jobs,
+    }
+    return render(request, 'posts/joblist.html', context)
 
 
 def like_unlike_view(request):
@@ -108,13 +142,13 @@ class PostUpdateView(UpdateView):
 
 def send_request(request):
     if request.method == 'POST':
-        pk = request.POST.get('job_pk')
+        pk = request.POST.get('job_id')
         user = request.user
         sender = Profile.objects.get(user=user)
         job = Job.objects.get(pk=pk)
-        job_request = JobRequest.objects.create(sender=sender, value='Apply',job = job)
+        job_request = JobRequest.objects.create(sender=sender, value='Apply', job=job)
         return redirect(request.META.get('HTTP_REFERER'))
-    return redirect('profiles:ProfileListView')
+    return redirect('job_list_view')
 
 
 
@@ -128,7 +162,6 @@ def find_jobs(request):
         if job.work_area == profile.work_area:
             related_jobs.append(job)
 
-
     print(related_jobs)
     context = {
         'profile': profile,
@@ -136,5 +169,14 @@ def find_jobs(request):
         'all_jobs': all_jobs,
     }
     return render(request, 'profiles/jobs.html', context)
+
+
+
+def job_detail_view(request, job_id):
+    print(job_id)
+    job = Job.objects.get(id=job_id)
+    print(job)
+    return render(request, 'posts/applicants.html', {'job': job})
+
 
 

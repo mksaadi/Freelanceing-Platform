@@ -6,7 +6,7 @@ from .models import Profile, Skill, Area
 class ProfileModelForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('bio', 'dp','cp',  'work_area','skills', 'pay_rate', 'occupation', 'education', 'credit_card_no', 'phone_no')
+        fields = ('bio', 'dp', 'cp',  'work_area','skills', 'pay_rate', 'occupation', 'education', 'credit_card_no', 'phone_no')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,6 +17,14 @@ class ProfileModelForm(forms.ModelForm):
                 self.fields['skills'].queryset = Skill.objects.filter(area_id=area_id)
             except (ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty City queryset
+
+
+class ClientModelForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('bio', 'dp', 'cp', 'occupation', 'education', 'credit_card_no', 'phone_no', 'company')
+
+
 
 
 class LoginForm(forms.Form):

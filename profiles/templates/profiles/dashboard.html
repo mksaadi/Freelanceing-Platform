@@ -160,31 +160,7 @@
           {%endif%}
 
     </div>
-       <div class="eleven wide columns">
-         <div ui content>
-             {% for job in related_jobs %}
-             <div class="ui segment">
-                 <p>Title : {{job.title}}</p>
-                  <p>Description : {{job.description}}</p>
-                  <p>Work Area : {{job.wrok_area}}</p>
-                 <p>Skills Needed :
-                      <ul>
-                     {% for e in job.get_skills %}
 
-                                <li>{{e.skill}}</li>
-
-                   {%endfor%}
-                     </ul>
-
-                 </p>
-                  <p>Salary : {{job.salary}}</p>
-             </div>
-==
-             </div>
-
-
-             {% endfor %}
-         </div>
      </div>
 
 </div>

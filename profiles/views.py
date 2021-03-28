@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, UserRegistrationForm, FreelancerRegistrationForm, ClientRegistrationForm, ProfileModelForm
+from .forms import LoginForm, UserRegistrationForm, FreelancerRegistrationForm, ClientRegistrationForm, ProfileModelForm , ClientModelForm
 from django.contrib.auth.decorators import login_required
 from .models import Profile, Skill, Area, ConnectionRequest
 from django.shortcuts import get_object_or_404
@@ -82,7 +82,7 @@ def dashboard(request):
             instance.work_area = job_form.cleaned_data.get('work_area')
             instance.skills.add(*job_form.cleaned_data.get('skills'))
             instance.salary = job_form.cleaned_data.get('salary')
-            post_form = JobModelForm()
+            job_form = JobModelForm()
             job_added = True
 
 
@@ -189,9 +189,13 @@ def register_client(request):
 
 
 @login_required
-def profile_view(request,user_id):
+def profile_view(request, user_id):
     profile = Profile.objects.get(user=request.user)
-    form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
+    if profile.is_freelancer:
+        form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
+    else:
+        form = ClientModelForm(request.POST or None, request.FILES or None, instance=profile)
+
     confirm = False
     if request.method == 'POST':
         if form.is_valid():
@@ -299,13 +303,14 @@ class ProfileListView(ListView):
         return context
 
 
+
 def send_connection(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
         user = request.user
         sender = Profile.objects.get(user=user)
         receiver = Profile.objects.get(pk=pk)
-        connection = ConnectionRequest.objects.create(sender=sender,receiver=receiver,status='sent')
+        connection = ConnectionRequest.objects.create(sender=sender, receiver=receiver, status='sent')
         return redirect(request.META.get('HTTP_REFERER'))
     return redirect('profiles:ProfileListView')
 
@@ -351,3 +356,41 @@ def connection_list(request):
         'profile': profile,
     }
     return render(request, 'profiles/connection_list.html', context)
+
+
+
+class ProfileDetailView(DetailView):
+    model = Profile
+    template_name = 'profiles/detail.html'
+
+    def get_object(self):
+        id = self.kwargs.get('id')
+        print(id)
+        profile = Profile.objects.get(id=id)
+        print(profile)
+        return profile
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = User.objects.get(username__iexact = self.request.user)
+        profile = Profile.objects.get(user=user)
+        con_r = ConnectionRequest.objects.filter(sender=profile)
+        con_s = ConnectionRequest.objects.filter(receiver=profile)
+        con_receiver = []
+        con_sender = []
+        for item in con_r:
+            con_receiver.append(item.receiver.user)
+        for item in con_s:
+            con_sender.append(item.sender.user)
+
+        context["profile"] = profile
+        context["con_receiver"] = con_receiver
+        context["con_sender"] = con_sender
+        context['posts'] = self.get_object().get_posts()
+        len_post = len(self.get_object().get_posts())
+        is_empty = False
+        if len_post == 0:
+            is_empty=True
+        context['is_empty'] = is_empty
+        return context
+

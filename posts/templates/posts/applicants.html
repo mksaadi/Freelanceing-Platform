@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Applicants{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+<h3>Applicants for " {{job.title}} " </h3>
+
+      {% for applicant in job.get_applicants %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column">
+                            <img class="ui small  image " src="{{applicant.dp.url}}">
+                        </div>
+                        <div class="thirteen wide column">
+                                <p>username : {{applicant.user.username}} </p>
+                               <p>Name : {{applicant.user.get_full_name}} </p>
+                            <a href="{% url 'ProfileDetailView' applicant.id %}">
+                                 <button class="ui primary button">See Profile</button>
+                            </a>
+                            <br>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+
+      {% endfor %}
+
+{% endblock content%}

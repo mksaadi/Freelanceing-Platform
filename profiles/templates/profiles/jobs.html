@@ -40,9 +40,9 @@
 
                                      <p></p>
                 <div class="right floated">
-                    <form action="" method="POST" class='like-form' id='{{job.id}}'>
+                    <form action="{% url 'posts:send_request' %}" method="POST" class='apply-form' id='{{job.id}}'>
                         {% csrf_token %}
-                        <input type="hidden" name="post_id" value={{job.id}}>
+                        <input type="hidden" name="job_id" value={{job.id}}>
 
                             <button type="submit" class="ui button like-btn{{job.id}}">
                                 {% if profile not in job.applicants.all %}
@@ -53,12 +53,13 @@
                             </button>
                             <div class="ui grid">
                                 <div class="column">
-                                    <div class="like-count{{obj.id}}"> {{job.get_applicants_no}} </div>
+                                    <div class="Apply-count{{job.id}}"> {{job.get_applicants_no}} </div>
                                 </div>
                                 <div class="column">
                                     <p>Applied</p>
                                 </div>
                             </div>
+                        <a href=""> See Applicants</a>
                     </form>
                 </div>
             </div>

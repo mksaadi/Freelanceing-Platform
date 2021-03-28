@@ -139,3 +139,6 @@ def pre_delete_remove_request(sender, instance, **kwargs):
     job_author.employees.remove(sender_.user)
     sender_.clients.remove(job_author.user)
     job_.save()
+    sender_.save()
+    job_author.save()
+

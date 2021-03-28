@@ -22,7 +22,7 @@ profile
        <form id="personForm" action="" method="POST" class="ui form" enctype="multipart/form-data" data-skills-url="{% url 'load_skills' %}" novalidate >
       {% csrf_token %}
        {{form.as_p}}
-     </div>
+      </div>
   </div>
   <div class="actions">
     <button type="submit" class="ui positive right labeled icon button">
@@ -89,10 +89,13 @@ profile
        {%endfor%}
     <h3> Post Number : {{profile.get_posts_no}} </h3>
     <h3> Number of Connected People  : {{profile.get_number_of_connections}} </h3>
-    <a href="{% url "connection_list" %}"> See your Connections </a>
+    <a href="{% url 'connection_list' %}"> See your Connections </a>
     <h3> Total likes given : {{profile.get_likes_given_no}} </h3>
     <h3> Total likes received  : {{profile.get_likes_received_no}} </h3>
-   <a href="{% url "posts:post_view" %}"> See your posts </a>
+   <a href="{% url 'posts:post_view' %}"> See your posts </a>
+    <br>
+    <br>
+   <a href="{% url 'posts:job_list_view' %}"> Jobs you posted </a>
    <br>
    <br>
    <br>
@@ -100,7 +103,9 @@ profile
 <!-- profile info -->
 
 <br>
+<div class="">
 
+</div>
 <button class="ui secondary button" id="model-btn">
  Update Profile
 </button>
