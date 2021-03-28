@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib import  messages
 from .forms import PostModelForm,JobModelForm,CommentModelForm
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -150,6 +151,25 @@ def send_request(request):
         return redirect(request.META.get('HTTP_REFERER'))
     return redirect('job_list_view')
 
+
+def approve_job_request(request):
+    if request.method == 'POST':
+        pk = request.POST.get('applicant_pk')
+        print("applicant pk : " + pk)
+        sender = Profile.objects.get(pk=pk)
+        print("size of queryset : ", end="")
+        print(len(sender))
+        print("Request sender : ", end="")
+        print(sender)
+        job_request = get_object_or_404(JobRequest, sender=sender)
+        job = job_request.job
+        if job_request.status == 'apply':
+            job_request.status = 'Approve'
+            job_request.save()
+            job.author.employees.add(sender.user)
+            sender.clients.add(job.author.user)
+        return redirect(request.META.get('HTTP_REFERER'))
+    return redirect('profiles:connection_request_view')
 
 
 

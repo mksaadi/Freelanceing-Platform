@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.post_list_view, name='post_view'),
     path('job_list_view/', views.job_list_view, name='job_list_view'),
     path('find_jobs/', views.find_jobs, name='find_jobs'),
+    path('approve_job_request/', views.approve_job_request, name='approve_job_request'),
     path('like_unlike', views.like_unlike_view, name='like_unlike'),
     path('<pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
     path('<pk>/update/', views.PostUpdateView.as_view(), name='post-update'),

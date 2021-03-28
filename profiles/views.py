@@ -7,11 +7,11 @@ from .models import Profile, Skill, Area, ConnectionRequest
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.db.models import Model
-from django.views.generic import ListView, UpdateView, DeleteView ,DetailView
+from django.views.generic import ListView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.models import User
 from django.db.models import Q
 from posts.forms import PostModelForm, JobModelForm, CommentModelForm
-from posts.models import Job, Post, Comment
+from posts.models import Job, Post, Comment , JobRequest
 
 
 def user_login(request):
@@ -222,6 +222,7 @@ def connection_request_view(request):
     profile = Profile.objects.get(user=request.user)
     print("Seeing connection requests of "+profile.user.username)
     connections_requests = ConnectionRequest.objects.filter(receiver=profile, status='sent')
+    jobs = Job.objects.filter(author=profile)
     connections_requests = list(map(lambda x: x.sender, connections_requests))
     is_empty = False
     if len(connections_requests) == 0:
@@ -231,6 +232,7 @@ def connection_request_view(request):
         'profile': profile,
         'connections_requests': connections_requests,
         'is_empty': is_empty,
+        'jobs': jobs,
     }
     return render(request, 'profiles/my_invites.html', context)
 
@@ -335,7 +337,7 @@ def approve_connection(request):
         user = request.user
         receiver = Profile.objects.get(user=user)
         sender = Profile.objects.get(pk=pk)
-        connection = get_object_or_404(ConnectionRequest,sender=sender, receiver=receiver)
+        connection = get_object_or_404(ConnectionRequest, sender=sender, receiver=receiver)
         if connection.status == 'sent':
             connection.status = 'accepted'
             connection.save()

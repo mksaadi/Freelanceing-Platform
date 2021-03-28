@@ -2,9 +2,12 @@
 {% block title %}Connection Requests{% endblock %}
 {% block content %}
  {% include 'profiles/nav.html' %}
+<div class="ui segment">
     {% if is_empty %}
-        <h3>No New Notifications</h3>
+        <h3>No New Connection Request</h3>
     {%endif%}
+</div>
+
 
   <ul>
       {% for item in connections_requests %}
@@ -46,4 +49,87 @@
          </div>
       {% endfor %}
   </ul>
+
+
+                <ul>
+      {% for job in jobs %}
+                    <div class="ui segment">
+                         <p>Applications for job {{job.title}}</p>
+                    </div>
+
+
+          {% for applicant  in job.get_applicants %}
+         <div class="ui segment">
+            <div class="ui grid">
+                <div class="row">
+
+                    <div class="three wide column">
+                        <img  class="ui small image" src="{{applicant.dp.url}}">
+                    </div>
+                     <div class="thirteen wide column">
+                            <h3>{{applicant.user}}</h3>
+                         <p>{{applicant.bio}}</p>
+
+                         <div class="ui grid">
+                             <a href="{% url 'ProfileDetailView' applicant.id %}">
+                             <button class="ui primary button">See Profile</button>
+                         </a>
+                          <form action="{% url 'posts:approve_job_request'%}" class="ui form" method="POST">
+                                     {% csrf_token %}
+                             <input type="hidden" name="applicant_pk" value="{{applicant.pk}}">
+                                            <button class="ui positive  button">
+                                            <i class="user plus icon"></i>
+                                           Approve
+                                        </button>
+
+                              </form>
+
+                             <form action="" class="ui form" method="POST">
+                                     {% csrf_token %}
+                                    <input type="hidden" name="applicant_id" value="{{applicant.id}}">
+                                            <button class="ui Negative red  button">
+                                            <i class="user minus icon"></i>
+                                           Decline
+                                        </button>
+
+                              </form>
+                         </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+         </div>
+
+      {% endfor %}
+
+       {% endfor %}
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock content%}
