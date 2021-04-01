@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save,pre_delete
 
 
+
+
 class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to='posts', blank=True)
@@ -44,6 +46,9 @@ class Comment(models.Model):
 
     def get_user_dp(self):
         return self.user.dp
+
+
+
 
 
 class Like(models.Model):
@@ -93,52 +98,50 @@ class Job(models.Model):
 
 class JobRequest(models.Model):
     APPLY_CHOICES = [
-        ('Apply', 'Apply'),
-        ('Approve', 'Approve'),
+        ('applied', 'applied'),
+        ('appointed', 'appointed'),
     ]
-    sender = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    value = models.CharField(choices=APPLY_CHOICES, max_length=8)
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='job_req_sender', default=None)
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='job_req_receiver', default=None)
+    status = models.CharField(choices=APPLY_CHOICES, max_length=10, default='applied')
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.job}-{self.value}"
+        return f"{self.job}-{self.status}"
 
 
 @receiver(post_save, sender=JobRequest)
 def post_save_add_applicants(sender, instance, created, **kwargs):
     sender_ = instance.sender
+    receiver_ = instance.receiver
     job_ = instance.job
-    if instance.value == 'Apply':
+    if instance.status == 'applied':
         job_.applicants.add(sender_)
         job_.save()
-
-
-@receiver(post_save, sender=JobRequest)
-def post_save_add_employee(sender, instance, created, **kwargs):
-    sender_ = instance.sender
-    job_ = instance.job
-    job_author = job_.author
-    if instance.value == 'Approve':
+    elif instance.status == 'appointed':
+        receiver_.employees.add(sender_.user)
+        sender_.clients.add(receiver_.user)
         job_.is_available = False
-        job_author.employees.add(sender_.user)
-        job_author.save()
-        sender_.clients.add(job_author.user)
-        sender_.save()
+        job_.applicants.remove(sender_)
         job_.save()
+        sender_.save()
+        receiver_.save()
 
 
-@receiver(pre_delete, sender=JobRequest)
-def pre_delete_remove_request(sender, instance, **kwargs):
-    sender_ = instance.sender
-    job_ = instance.job
-    job_author = job_.author
-    job_.applicants.remove(sender_)
-    job_author.employees.remove(sender_.user)
-    sender_.clients.remove(job_author.user)
-    job_.save()
-    sender_.save()
-    job_author.save()
+
+class JobAppointment(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    content = models.CharField(max_length=20)
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.job}-{self.content[:10]}"
+
+
+
 

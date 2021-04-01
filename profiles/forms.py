@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Profile, Skill, Area
 
-
 class ProfileModelForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -70,3 +69,4 @@ class ClientRegistrationForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('occupation', 'company', 'dp', 'cp', 'bio', 'credit_card_no', 'phone_no')
+

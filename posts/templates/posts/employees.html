@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+
+
+
+
+<h3>Employees for " {{profile.user}} " </h3>
+
+      {% for employee in employee_profiles %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column">
+                            <img class="ui small  image " src="{{employee.dp.url}}">
+                        </div>
+                        <div class="thirteen wide column">
+                                <p>username : {{employee.user.username}} </p>
+                               <p>Name : {{employee.user.get_full_name}} </p>
+                            <a href="{% url 'ProfileDetailView' employee.id %}">
+                                 <button class="ui primary button">See Profile</button>
+                            </a>
+                            <a href="">
+                                 <button class="ui secondary button">Rate</button>
+                            </a>
+                            <br>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+      {% endfor %}
+
+{% endblock content%}

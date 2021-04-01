@@ -79,6 +79,8 @@ profile
         </div>
     </div>
    <h3>Bio  : {{profile.bio}}</h3>
+   <h3>Rating  : {{res}}</h3>
+
    <h3>Work Area :  {{profile.work_area}}</h3>
    <h3>Skills :  </h3>
 
@@ -95,7 +97,11 @@ profile
    <a href="{% url 'posts:post_view' %}"> See your posts </a>
     <br>
     <br>
-   <a href="{% url 'posts:job_list_view' %}"> Jobs you posted </a>
+        {% if profile.is_client %}
+               <a href="{% url 'posts:job_list_view' %}"> Jobs you posted </a>
+               <br>
+               <a href="{% url 'posts:employee_list' %}"> Your Employee</a>
+        {% endif %}
    <br>
    <br>
    <br>

@@ -16,13 +16,11 @@
                                  {{ job.author.user }} - {{ job.created|timesince}} ago
 
                             </div>
-                                 <div class="ui fluid image">
+                                 <div class="ui medium image">
                                 {% if job.image %}
                                     <img src={{job.image.url}}>
                                 {% endif %}
                                 </div>
-
-
 
                                  <div class="content">
                 <p> <strong> Title :</strong>  {{ job.title }}</p>
@@ -40,7 +38,7 @@
 
                                      <p></p>
                 <div class="right floated">
-                    <form action="{% url 'posts:send_request' %}" method="POST" class='apply-form' id='{{job.id}}'>
+                    <form action="{% url 'posts:send_job_request' %}" method="POST" class='apply-form' id='{{job.id}}'>
                         {% csrf_token %}
                         <input type="hidden" name="job_id" value={{job.id}}>
 
@@ -59,7 +57,7 @@
                                     <p>Applied</p>
                                 </div>
                             </div>
-                        <a href=""> See Applicants</a>
+                        <a href="{% url 'posts:job_detail_view' job.id  %}"> See Applicants</a>
                     </form>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment, Job
+from .models import Post, Comment, Job , JobAppointment
 from profiles.models import Skill, Area
 
 class PostModelForm(forms.ModelForm):
@@ -33,3 +33,11 @@ class CommentModelForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('body',)
+
+
+class AppointmentForm(forms.ModelForm):
+    content = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Congratulate Your newest Employee'}))
+    class Meta:
+        model = JobAppointment
+        fields = ('content',)
+

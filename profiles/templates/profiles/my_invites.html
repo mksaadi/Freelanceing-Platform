@@ -8,7 +8,6 @@
     {%endif%}
 </div>
 
-
   <ul>
       {% for item in connections_requests %}
          <div class="ui segment">
@@ -52,31 +51,32 @@
 
 
                 <ul>
-      {% for job in jobs %}
+      {% for job_request in job_requests %}
                     <div class="ui segment">
-                         <p>Applications for job {{job.title}}</p>
+                         <p>Applications for " {{job_request.job.title}}</p>
                     </div>
 
-
-          {% for applicant  in job.get_applicants %}
          <div class="ui segment">
             <div class="ui grid">
                 <div class="row">
 
                     <div class="three wide column">
-                        <img  class="ui small image" src="{{applicant.dp.url}}">
+                        <img  class="ui small image" src="{{job_request.sender.dp.url}}">
                     </div>
                      <div class="thirteen wide column">
-                            <h3>{{applicant.user}}</h3>
-                         <p>{{applicant.bio}}</p>
+                            <h3>{{job_request.sender.user}}</h3>
+                         <p>{{job_request.sender.bio}}</p>
+                         <br>
+                         <br>
+                         <br>
 
                          <div class="ui grid">
-                             <a href="{% url 'ProfileDetailView' applicant.id %}">
+                             <a href="{% url 'ProfileDetailView' job_request.sender.id %}">
                              <button class="ui primary button">See Profile</button>
                          </a>
                           <form action="{% url 'posts:approve_job_request'%}" class="ui form" method="POST">
                                      {% csrf_token %}
-                             <input type="hidden" name="applicant_pk" value="{{applicant.pk}}">
+                             <input type="hidden" name="request_pk" value="{{job_request.pk}}">
                                             <button class="ui positive  button">
                                             <i class="user plus icon"></i>
                                            Approve
@@ -86,13 +86,14 @@
 
                              <form action="" class="ui form" method="POST">
                                      {% csrf_token %}
-                                    <input type="hidden" name="applicant_id" value="{{applicant.id}}">
+                                    <input type="hidden" name="applicant_id" value="{{job_request.sender..id}}">
                                             <button class="ui Negative red  button">
                                             <i class="user minus icon"></i>
                                            Decline
                                         </button>
 
                               </form>
+                             <br>
                          </div>
 
 
@@ -101,8 +102,6 @@
                 </div>
             </div>
          </div>
-
-      {% endfor %}
 
        {% endfor %}
   </ul>

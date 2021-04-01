@@ -1,12 +1,12 @@
 from django.shortcuts import render ,redirect
 from .models import Post,Like,Comment, Job , JobRequest
 from profiles.models import Profile , ConnectionRequest
-from .forms import PostModelForm, CommentModelForm , JobModelForm
+from .forms import PostModelForm, CommentModelForm , JobModelForm , AppointmentForm
 from django.views.generic import UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib import  messages
-from .forms import PostModelForm,JobModelForm,CommentModelForm
+from .forms import PostModelForm, JobModelForm, CommentModelForm
 from django.shortcuts import get_object_or_404
 # Create your views here.
 
@@ -86,7 +86,7 @@ def like_unlike_view(request):
     user = request.user
     if request.method == 'POST':
         post_id = request.POST.get('post_id')
-        post_obj = Post.objects.get(id = post_id)
+        post_obj = Post.objects.get(id=post_id)
         profile = Profile.objects.get(user=user)
         if profile in post_obj.liked.all():
             post_obj.liked.remove(profile)
@@ -141,35 +141,45 @@ class PostUpdateView(UpdateView):
 
 
 
-def send_request(request):
+def send_job_request(request):
     if request.method == 'POST':
-        pk = request.POST.get('job_id')
-        user = request.user
-        sender = Profile.objects.get(user=user)
-        job = Job.objects.get(pk=pk)
-        job_request = JobRequest.objects.create(sender=sender, value='Apply', job=job)
+        job_id = request.POST.get('job_id')
+        req_sender = Profile.objects.get(user=request.user)
+        req_job = Job.objects.get(id=job_id)
+        req_receiver = req_job.author
+        new_job_request = JobRequest.objects.create(sender=req_sender, receiver=req_receiver, job=req_job, status = 'applied')
+        new_job_request.save()
         return redirect(request.META.get('HTTP_REFERER'))
-    return redirect('job_list_view')
+    return redirect('connection_request_view')
+
+
+
 
 
 def approve_job_request(request):
     if request.method == 'POST':
-        pk = request.POST.get('applicant_pk')
-        print("applicant pk : " + pk)
-        sender = Profile.objects.get(pk=pk)
-        print("size of queryset : ", end="")
-        print(len(sender))
-        print("Request sender : ", end="")
-        print(sender)
-        job_request = get_object_or_404(JobRequest, sender=sender)
+        print("Approve method called.")
+        print('*********')
+        jpk = request.POST.get('request_pk')
+        job_request = get_object_or_404(JobRequest, pk=jpk)
+        print("******")
+        print(job_request)
+        sender_ = job_request.sender
+        receiver_ = job_request.receiver
         job = job_request.job
-        if job_request.status == 'apply':
-            job_request.status = 'Approve'
+        if job_request.status == 'applied':
+            job_request.status = 'appointed'
+            job_author = job_request.job.author
+            job_author.employees.add(sender_.user)
+            sender_.clients.add(receiver_.user)
+            job.applicants.remove(sender_)
+            job.available = False
+            receiver_.save()
+            sender_.save()
             job_request.save()
-            job.author.employees.add(sender.user)
-            sender.clients.add(job.author.user)
-        return redirect(request.META.get('HTTP_REFERER'))
-    return redirect('profiles:connection_request_view')
+            job.save()
+            return redirect(request.META.get('HTTP_REFERER'))
+    return redirect('connection_request_view')
 
 
 
@@ -197,6 +207,24 @@ def job_detail_view(request, job_id):
     job = Job.objects.get(id=job_id)
     print(job)
     return render(request, 'posts/applicants.html', {'job': job})
+
+
+def employee_list(request):
+    profile = Profile.objects.get(user = request.user)
+    employees = profile.employees.all()
+    employee_profiles = []
+
+    for employee in employees:
+        emp_profile = Profile.objects.get(user=employee)
+        employee_profiles.append(emp_profile)
+    print(employee_profiles)
+    context = {
+        'profile':profile,
+        'employee_profiles': employee_profiles,
+    }
+    return render(request, 'posts/employees.html',context)
+
+
 
 
 

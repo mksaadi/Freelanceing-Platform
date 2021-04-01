@@ -11,7 +11,10 @@ urlpatterns = [
     path('like_unlike', views.like_unlike_view, name='like_unlike'),
     path('<pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
     path('<pk>/update/', views.PostUpdateView.as_view(), name='post-update'),
-    path('send_request/', views.send_request, name='send_request'),
+    path('send_job_request/', views.send_job_request, name='send_job_request'),
     path('job/<int:job_id>/', views.job_detail_view, name='job_detail_view'),
+    path('employee_list/', views.employee_list, name='employee_list'),
+
+
 
 ]

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Appointment{% endblock %}
+{% block content %}
+   {% include 'profiles/nav.html' %}
+   <form action="{% url 'posts:like_unlike' %}" method="POST" class='like-form' id='{{obj.id}}'>
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{obj.id}}>
+
+                            <button type="submit" class="ui button like-btn{{obj.id}}">
+                                    Send
+                            </button>
+
+                    </form>
+{% endblock content%}

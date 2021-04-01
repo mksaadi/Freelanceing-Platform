@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Q
 from django.shortcuts import reverse
-
+from django.core.validators import MinValueValidator,MaxValueValidator
 
 
 
@@ -93,7 +93,7 @@ class Profile(models.Model):
     objects = ProfileManager()
 
     def get_absolute_url(self):
-        return reverse("profiles:ProfileDetailView", kwargs={"id":self.id})
+        return reverse("profiles:ProfileDetailView", kwargs={"id": self.id})
 
 
     def get_employees(self):
@@ -186,10 +186,11 @@ def post_save_add_connection(sender, instance, created, **kwargs):
 
 
 @receiver(pre_delete,sender=ConnectionRequest)
-def pre_delete_remove_connection(sender, instance,**kwargs):
+def pre_delete_remove_connection(sender, instance, **kwargs):
     sender = instance.sender
     receiver = instance.receiver
     sender.connections.remove(receiver.user)
     receiver.connections.remove(sender.user)
     sender.save()
     receiver.save()
+

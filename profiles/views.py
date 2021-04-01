@@ -191,6 +191,7 @@ def register_client(request):
 @login_required
 def profile_view(request, user_id):
     profile = Profile.objects.get(user=request.user)
+    sum_rate = 0
     if profile.is_freelancer:
         form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
     else:
@@ -205,6 +206,7 @@ def profile_view(request, user_id):
         "profile": profile,
         "form": form,
         "confirm": confirm,
+
     }
     return render(request, 'profiles/profile.html', context)
 
@@ -220,9 +222,9 @@ def load_skills(request):
 
 def connection_request_view(request):
     profile = Profile.objects.get(user=request.user)
-    print("Seeing connection requests of "+profile.user.username)
     connections_requests = ConnectionRequest.objects.filter(receiver=profile, status='sent')
     jobs = Job.objects.filter(author=profile)
+    job_requests = JobRequest.objects.filter(receiver=profile, status='applied')
     connections_requests = list(map(lambda x: x.sender, connections_requests))
     is_empty = False
     if len(connections_requests) == 0:
@@ -233,6 +235,7 @@ def connection_request_view(request):
         'connections_requests': connections_requests,
         'is_empty': is_empty,
         'jobs': jobs,
+        'job_requests': job_requests,
     }
     return render(request, 'profiles/my_invites.html', context)
 
@@ -395,4 +398,5 @@ class ProfileDetailView(DetailView):
             is_empty=True
         context['is_empty'] = is_empty
         return context
+
 
