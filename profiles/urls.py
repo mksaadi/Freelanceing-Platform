@@ -29,4 +29,7 @@ urlpatterns = [
     path('approve_connection/', views.approve_connection, name='approve_connection'),
     path('connection_list/', views.connection_list, name='connection_list'),
     path('<int:id>/ProfileDetailView/', views.ProfileDetailView.as_view(), name='ProfileDetailView'),
+    path('<int:user_id>/rating/', views.rating, name='rating'),
+    path('<int:user_id>/all_ratings/', views.all_ratings, name='all_ratings'),
+    path('<int:user_id>/update_rating/', views.update_rating, name='update_rating'),
 ]

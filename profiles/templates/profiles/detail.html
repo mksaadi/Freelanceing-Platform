@@ -14,6 +14,33 @@
                      <div class="ui label"> {{object.get_posts_no}}</div>
                  </div>
                   <div class="item">
+                     Rating :
+                               {% if not not_rated%}
+                                       {% for i in avg%}
+                                        <i class="star yellow icon"></i>
+                                       {% endfor %}
+                                {% else %}
+                                 <div class="ui label"> Unrated</div>
+                               {%endif%}
+
+                 </div>
+                   <div class="item">
+                          <a href="{% url 'all_ratings' receiver_id %}">See all ratings </a>
+                  </div>
+
+
+                   {% if profile not in raters%}
+                            <div class="item">
+                                  <a href="{% url 'rating' receiver_id %}">Rate </a>
+                             </div>
+
+                   {% else %}
+                                 <div class="item">
+                                  <a href="{% url 'update_rating' receiver_id %}">Update Rating </a>
+                             </div>
+                   {%endif%}
+
+                  <div class="item">
                      Likes Received <div class="ui label"> {{object.get_likes_received_no}}</div>
                  </div>
                    <div class="item">
@@ -22,20 +49,23 @@
 
 
               </div>
+
+              </div>
+
+                  <div class="eleven wide column">
+                        {% if not is_empty %}
+                                {% for post in posts %}
+                                    <div class="segment ui fluid">
+                                        {{post.content}}
+                                    </div>
+                                {% endfor%}
+
+                        {% else %}
+                        <p>No posts to show!</p>
+                       {% endif %}
+                  </div>
           </div>
 
-          <div class="eleven wide column">
-                {% if not is_empty %}
-                        {% for post in posts %}
-                            <div class="segment ui fluid">
-                                {{post.content}}
-                            </div>
-                        {% endfor%}
-
-                {% else %}
-                <p>No posts to show!</p>
-               {% endif %}
-          </div>
 
       </div>
   </div>

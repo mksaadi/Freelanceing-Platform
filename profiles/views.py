@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, UserRegistrationForm, FreelancerRegistrationForm, ClientRegistrationForm, ProfileModelForm , ClientModelForm
+from .forms import RatingForm,RatingUpdateForm, LoginForm, UserRegistrationForm, FreelancerRegistrationForm, ClientRegistrationForm, ProfileModelForm , ClientModelForm
 from django.contrib.auth.decorators import login_required
-from .models import Profile, Skill, Area, ConnectionRequest
+from .models import Profile, Skill, Area, ConnectionRequest, Rating
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.db.models import Model
@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from posts.forms import PostModelForm, JobModelForm, CommentModelForm
 from posts.models import Job, Post, Comment , JobRequest
+from django.urls import reverse_lazy
 
 
 def user_login(request):
@@ -191,7 +192,6 @@ def register_client(request):
 @login_required
 def profile_view(request, user_id):
     profile = Profile.objects.get(user=request.user)
-    sum_rate = 0
     if profile.is_freelancer:
         form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
     else:
@@ -254,9 +254,31 @@ class ProfileDetailView(DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         user = User.objects.get(username__iexact = self.request.user)
+        receiver_id = self.kwargs.get('id')
+        rating_receiver = Profile.objects.get(id=receiver_id)
         profile = Profile.objects.get(user=user)
         con_r = ConnectionRequest.objects.filter(sender=profile)
         con_s = ConnectionRequest.objects.filter(receiver=profile)
+        score_sum = 0
+        ratings = Rating.objects.filter(receiver=rating_receiver)
+        print(ratings)
+        print("*********")
+        num_of_ratings = len(ratings)
+        avg_rating = 0
+        not_rated = False
+        avg = []
+        raters = []
+        if num_of_ratings == 0:
+            not_rated = True
+        else:
+
+            for rating in ratings:
+                score_sum += rating.score
+                raters.append(rating.sender)
+            avg_rating = score_sum / num_of_ratings
+            for i in range(int(avg_rating)):
+                avg.append(1)
+
         con_receiver = []
         con_sender = []
         for item in con_r:
@@ -267,11 +289,15 @@ class ProfileDetailView(DetailView):
         context["profile"] = profile
         context["con_receiver"] = con_receiver
         context["con_sender"] = con_sender
+        context["receiver_id"] = receiver_id
+        context["avg"] = avg
+        context["not_rated"] = not_rated
+        context["raters"] = raters
         context['posts'] = self.get_object().get_posts()
         len_post = len(self.get_object().get_posts())
         is_empty = False
         if len_post == 0:
-            is_empty=True
+            is_empty = True
         context['is_empty'] = is_empty
         return context
 
@@ -364,39 +390,62 @@ def connection_list(request):
 
 
 
-class ProfileDetailView(DetailView):
-    model = Profile
-    template_name = 'profiles/detail.html'
+def rating(request, user_id):
+    profile = Profile.objects.get(id=user_id)
+    sender = Profile.objects.get(user = request.user)
+    profiles_ratings = Rating.objects.filter(sender=sender, receiver=profile)
+    update = False
+    profile_raters = []
+    for rating in profiles_ratings:
+        profile_raters.append(rating.sender)
+    if sender in profile_raters:
+        update = True
 
-    def get_object(self):
-        id = self.kwargs.get('id')
-        print(id)
-        profile = Profile.objects.get(id=id)
-        print(profile)
-        return profile
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = User.objects.get(username__iexact = self.request.user)
-        profile = Profile.objects.get(user=user)
-        con_r = ConnectionRequest.objects.filter(sender=profile)
-        con_s = ConnectionRequest.objects.filter(receiver=profile)
-        con_receiver = []
-        con_sender = []
-        for item in con_r:
-            con_receiver.append(item.receiver.user)
-        for item in con_s:
-            con_sender.append(item.sender.user)
-
-        context["profile"] = profile
-        context["con_receiver"] = con_receiver
-        context["con_sender"] = con_sender
-        context['posts'] = self.get_object().get_posts()
-        len_post = len(self.get_object().get_posts())
-        is_empty = False
-        if len_post == 0:
-            is_empty=True
-        context['is_empty'] = is_empty
-        return context
+    if request.method == 'POST':
+        if not update:
+            rating_form = RatingForm(request.POST)
+            if rating_form.is_valid():
+                new_rating = rating_form.save(commit=False)
+                new_rating.receiver = profile
+                new_rating.sender = sender
+                new_rating.score = rating_form.cleaned_data.get('score')
+                new_rating.save()
+                return redirect('/')
+        else:
+            rating_form = RatingUpdateForm(request.POST)
+            if rating_form.is_valid():
+                new_rating = rating_form.save(commit=False)
+                new_rating.receiver = profile
+                new_rating.sender = sender
+                new_rating.score = rating_form.cleaned_data.get('score')
+                new_rating.save()
+                return redirect('/')
+    else:
+        if not update:
+            rating_form = RatingForm()
+        else:
+            rating_form = RatingUpdateForm()
+    return render(request, "profiles/rating.html", {'rating_form': rating_form, 'update': update})
 
 
+def all_ratings(request, user_id):
+    profile = Profile.objects.get(id=user_id)
+    all_ratings = Rating.objects.filter(receiver=profile)
+    return render(request, "profiles/all_ratings.html", {'all_ratings': all_ratings , "profile": profile,})
+
+
+def update_rating(request, user_id):
+    rating_sender = Profile.objects.get(user = request.user)
+    rating_receiver = Profile.objects.get(id=user_id)
+    rating = Rating.objects.get(sender=rating_sender, receiver=rating_receiver)
+    form = RatingForm(instance=rating)
+    if request.method == 'POST':
+        form = RatingForm(request.POST, instance=rating)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+
+    context = {
+        'form':form,
+    }
+    return render(request,'profiles/rating_update.html',context)

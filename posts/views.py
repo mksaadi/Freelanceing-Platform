@@ -1,6 +1,6 @@
 from django.shortcuts import render ,redirect
 from .models import Post,Like,Comment, Job , JobRequest
-from profiles.models import Profile , ConnectionRequest
+from profiles.models import Profile , ConnectionRequest, Rating
 from .forms import PostModelForm, CommentModelForm , JobModelForm , AppointmentForm
 from django.views.generic import UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
@@ -210,7 +210,7 @@ def job_detail_view(request, job_id):
 
 
 def employee_list(request):
-    profile = Profile.objects.get(user = request.user)
+    profile = Profile.objects.get(user=request.user)
     employees = profile.employees.all()
     employee_profiles = []
 
@@ -218,11 +218,12 @@ def employee_list(request):
         emp_profile = Profile.objects.get(user=employee)
         employee_profiles.append(emp_profile)
     print(employee_profiles)
+
     context = {
-        'profile':profile,
+        'profile': profile,
         'employee_profiles': employee_profiles,
     }
-    return render(request, 'posts/employees.html',context)
+    return render(request, 'posts/employees.html', context)
 
 
 

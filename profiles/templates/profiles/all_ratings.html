@@ -3,21 +3,19 @@
 {% block content %}
  {% include 'profiles/nav.html' %}
 
-<h3>Employees for " {{profile.user}} " </h3>
+<h3>All Reviews of" {{profile.user}} " </h3>
 
-      {% for employee in employee_profiles %}
+      {% for rating in all_ratings %}
             <div class="ui segment">
                 <div class="ui grid">
                     <div class="row">
                         <div class="three wide column">
-                            <img class="ui small  image " src="{{employee.dp.url}}">
+                            <img class="ui small  image " src="{{rating.sender.dp.url}}">
                         </div>
                         <div class="thirteen wide column">
-                                <p>username : {{employee.user.username}} </p>
-                               <p>Name : {{employee.user.get_full_name}} </p>
-                            <a href="{% url 'ProfileDetailView' employee.id %}">
-                                 <button class="ui primary button">Profile</button>
-                            </a>
+                                <p>username : {{rating.sender.user.username}} </p>
+                              <p>Score : {{rating.score}}</p>
+                              <p>Review : {{rating.review}}</p>
                             <br>
                             </div>
                     </div>

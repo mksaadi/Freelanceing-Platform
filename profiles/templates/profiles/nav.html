@@ -1,10 +1,10 @@
 <div class="ui attached stackable menu">
   <div class="ui container">
     <a href="{% url 'dashboard'%}" class="item">
-      <i class="home icon"></i> Home
+      <i class="home icon blue"></i> Home
     </a>
     <a href="{% url 'profiles_list_view' %}" class="item">
-      <i class="user plus icon"></i> Grow Network
+      <i class="user plus icon green"></i> Grow Network
     </a>
        {% if profile.is_freelancer %}
                 <a href="{% url 'posts:find_jobs' %}" class="item">
@@ -12,16 +12,16 @@
                 </a>
        {% else %}
               <a href="{% url 'profiles_list_view' %}" class="item">
-                    <i class="briefcase icon"></i> Find Talents
+                    <i class="briefcase icon green "></i> Find Talents
               </a>
 
        {% endif %}
 
     <a class="item">
-      <i class="mail icon"></i> Messages
+      <i class="mail icon orange" ></i> Messages
     </a>
       <a href="{% url 'connection_request_view' %}" class="item">
-      <i class="bell icon"></i> Notifications
+      <i class="bell icon red"></i> Notifications
     </a>
 
     <div class="right item">
@@ -29,11 +29,10 @@
     </div>
        <div class="ui simple dropdown item">
       More
-      <i class="dropdown icon"></i>
+      <i class="dropdown icon blue"></i>
       <div class="menu">
-        <a href="{% url 'profile_view' user.id %}" class="item"><i class="edit icon"></i> Profile</a>
-        <a class="item"><i class="globe icon"></i> Choose Language</a>
-        <a href="{% url 'logout' %}" class="item"><i class="settings icon"></i> Logout</a>
+        <a href="{% url 'profile_view' user.id %}" class="item"><i class="edit icon orange"></i> Profile</a>
+        <a href="{% url 'logout' %}" class="item"><i class="settings icon red"></i> Logout</a>
       </div>
     </div>
   </div>

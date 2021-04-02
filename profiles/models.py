@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save,pre_delete
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.conf import settings
 from django.template.defaultfilters import slugify
@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Q
 from django.shortcuts import reverse
-from django.core.validators import MinValueValidator,MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 
@@ -63,6 +63,17 @@ class ProfileManager(models.Manager):
         profiles = Profile.objects.all().exclude(user=me)
         return profiles
 
+    def get_all_raters_profile(self, sender):
+        profile = Profile.objects.get(user = sender)
+        raters_profiles = []
+        ratings = Rating.objects.filter(receiver=profile)
+        for rating in ratings:
+            raters_profiles.append(rating.sender)
+
+        print(raters_profiles)
+        return raters_profiles
+
+
 
 
 class Profile(models.Model):
@@ -94,6 +105,10 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("profiles:ProfileDetailView", kwargs={"id": self.id})
+
+
+    def get_all_raters_count(self):
+        return self.rating_sender_set.all().count()
 
 
     def get_employees(self):
@@ -148,6 +163,20 @@ class Profile(models.Model):
         return f'Profile for user {self.user.username}--{self.created.strftime("%d-%m-%Y")}'
 
 
+
+class Rating(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='rating_sender')
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='rating_receiver')
+    score = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    review = models.TextField(default=None, max_length=100)
+
+    def __str__(self):
+        return str(self.pk)
+
+
+
+
+
 @receiver(post_save, sender=User)
 def post_save_create_profile(sender, instance, created,**kwargs):
     print('sender', sender)
@@ -163,8 +192,8 @@ class ConnectionRequest(models.Model):
         ('sent', 'sent'),
         ('accepted', 'accepted'),
     ]
-    sender = models.ForeignKey(Profile,on_delete=models.CASCADE,related_name='sender')
-    receiver = models.ForeignKey(Profile,on_delete=models.CASCADE, related_name='receiver')
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
     status = models.CharField(max_length=8,choices=STATUS_CHOICES)
     created = models.DateTimeField(auto_now=True)
     updated = models.DateTimeField(auto_now_add=True)
@@ -193,4 +222,5 @@ def pre_delete_remove_connection(sender, instance, **kwargs):
     receiver.connections.remove(sender.user)
     sender.save()
     receiver.save()
+
 

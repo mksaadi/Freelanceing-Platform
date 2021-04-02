@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Rating{% endblock %}
+{% block content %}
+ {% include 'profiles/nav.html' %}
+
+
+<div class="ui container">
+  <i class="close icon"></i>
+  <div class="header">
+      {% if update %}
+            <p>Update Employee Rating </p>
+      {% else %}
+              <p>Rate Employee </p>
+      {% endif %}
+
+  </div>
+      <div class="image content">
+            <div class="description">
+               <form  action="" method="POST" class="ui form" >
+                   {% csrf_token %}
+                     {{rating_form.as_p}}
+                   <form>
+            </div>
+      </div>
+              <div class="actions">
+                <button id="rate-btn" type="submit" class="ui positive right labeled icon button">
+                 Rate
+                  <i class="checkmark icon"></i>
+                </button>
+                  </form>
+
+              </div>
+    </div>
+
+{% endblock content%}
