@@ -1,15 +1,17 @@
-from django.shortcuts import render ,redirect
-from .models import Post,Like,Comment, Job , JobRequest
+from django.shortcuts import render ,redirect,reverse
+from .models import Post,Like,Comment, Job , JobRequest,Message
 from profiles.models import Profile , ConnectionRequest, Rating
 from .forms import PostModelForm, CommentModelForm , JobModelForm , AppointmentForm
-from django.views.generic import UpdateView, DeleteView, DetailView
+from django.views.generic import UpdateView, DeleteView, DetailView, View
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib import  messages
 from .forms import PostModelForm, JobModelForm, CommentModelForm
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import humanize
 # Create your views here.
-
+from django.http import JsonResponse
 
 def post_list_view(request):
     profile = Profile.objects.get(user=request.user)
@@ -168,7 +170,8 @@ def approve_job_request(request):
         receiver_ = job_request.receiver
         job = job_request.job
         if job_request.status == 'applied':
-            job_request.status = 'appointed'
+            job.status = 'appointed'
+            job.winner = sender_
             job_author = job_request.job.author
             job_author.employees.add(sender_.user)
             sender_.clients.add(receiver_.user)
@@ -178,7 +181,8 @@ def approve_job_request(request):
             sender_.save()
             job_request.save()
             job.save()
-            return redirect(request.META.get('HTTP_REFERER'))
+            job_request.delete()
+            return  redirect('connection_request_view')
     return redirect('connection_request_view')
 
 
@@ -227,5 +231,20 @@ def employee_list(request):
 
 
 
+def workspaces(request):
+
+    profile = Profile.objects.get(user=request.user)
+    if profile.is_freelancer:
+        jobs = Job.objects.filter(winner=profile)
+    else:
+        jobs = Job.objects.filter(author=profile)
+
+    context = {
+        'jobs': jobs,
+        'profile':profile,
+    }
+    return render(request,'posts/workspaces.html',context)
+
+# message view
 
 

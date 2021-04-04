@@ -71,7 +71,7 @@ class Job(models.Model):
     description = models.TextField(max_length=50)
     image = models.ImageField(upload_to='posts', blank=True)
     applicants = models.ManyToManyField(Profile, blank=True, related_name='job_applicants')
-
+    winner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='job_getter', null=True)
     created = models.DateTimeField(auto_now=True)
     updated = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='jobs')
@@ -134,14 +134,17 @@ def post_save_add_applicants(sender, instance, created, **kwargs):
 
 class JobAppointment(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    content = models.CharField(max_length=20)
-    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    message = models.CharField(max_length=20)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.job}-{self.content[:10]}"
+        return str(self.title)
 
 
-
-
+class Message(models.Model):
+    text = models.TextField()
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)

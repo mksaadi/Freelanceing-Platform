@@ -8,7 +8,7 @@
     </a>
        {% if profile.is_freelancer %}
                 <a href="{% url 'posts:find_jobs' %}" class="item">
-                    <i class="briefcase icon"></i> Find jobs
+                    <i class="briefcase icon yellow"></i> Find jobs
                 </a>
        {% else %}
               <a href="{% url 'profiles_list_view' %}" class="item">
@@ -17,7 +17,7 @@
 
        {% endif %}
 
-    <a class="item">
+    <a href="{% url 'posts:workspaces' %}" class="item">
       <i class="mail icon orange" ></i> Messages
     </a>
       <a href="{% url 'connection_request_view' %}" class="item">
