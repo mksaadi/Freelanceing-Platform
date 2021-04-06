@@ -59,6 +59,11 @@ class ProfileManager(models.Manager):
         print(available)
         return available
 
+    def get_all_request_received(self,receiver):
+        qs = ConnectionRequest.objects.filter(receiver=receiver, status='sent')
+        return qs
+
+
     def get_all_profiles(self,me):
         profiles = Profile.objects.all().exclude(user=me)
         return profiles

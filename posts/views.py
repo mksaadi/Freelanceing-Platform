@@ -16,7 +16,7 @@ from django.http import JsonResponse
 def post_list_view(request):
     profile = Profile.objects.get(user=request.user)
     qs = Post.objects.filter(author=profile)
-    jobs = Job.objects.filter(author = profile)
+    jobs = Job.objects.filter(author = profile,available = True)
     post_form = PostModelForm()
     comment_form = CommentModelForm()
     post_added = False
@@ -59,6 +59,7 @@ def job_list_view(request):
     job_form = JobModelForm()
     job_added = False
 
+
     if 'submit_job_form' in request.POST:
         job_form = JobModelForm(request.POST, request.FILES)
         print(request.POST)
@@ -74,6 +75,7 @@ def job_list_view(request):
             instance.salary = job_form.cleaned_data.get('salary')
             job_form = JobModelForm()
             job_added = True
+
 
     context = {
         'profile': profile,
@@ -189,7 +191,7 @@ def approve_job_request(request):
 
 def find_jobs(request):
     profile = Profile.objects.get(user=request.user)
-    all_jobs = Job.objects.all()
+    all_jobs = Job.objects.filter(available=True)
     related_jobs = []
 
     for job in all_jobs:

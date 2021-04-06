@@ -256,7 +256,18 @@ class ProfileDetailView(DetailView):
         user = User.objects.get(username__iexact = self.request.user)
         receiver_id = self.kwargs.get('id')
         rating_receiver = Profile.objects.get(id=receiver_id)
+        can_rate = False
         profile = Profile.objects.get(user=user)
+        profiles_employees = profile.get_employees()
+        profile_employee_list = []
+        for emp in profiles_employees:
+            emp_profile = Profile.objects.get(user = emp)
+            profile_employee_list.append(emp_profile)
+
+        if rating_receiver in profile_employee_list:
+            can_rate = True
+
+
         con_r = ConnectionRequest.objects.filter(sender=profile)
         con_s = ConnectionRequest.objects.filter(receiver=profile)
         score_sum = 0
@@ -293,6 +304,7 @@ class ProfileDetailView(DetailView):
         context["avg"] = avg
         context["not_rated"] = not_rated
         context["raters"] = raters
+        context["can_rate"] = can_rate
         context['posts'] = self.get_object().get_posts()
         len_post = len(self.get_object().get_posts())
         is_empty = False
