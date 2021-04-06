@@ -11,7 +11,7 @@ from django.views.generic import ListView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.models import User
 from django.db.models import Q
 from posts.forms import PostModelForm, JobModelForm, CommentModelForm
-from posts.models import Job, Post, Comment , JobRequest
+from posts.models import Job, Post, Comment, JobRequest
 from django.urls import reverse_lazy
 
 
@@ -302,10 +302,6 @@ class ProfileDetailView(DetailView):
         return context
 
 
-
-
-
-
 class ProfileListView(ListView):
     model = Profile
     template_name = 'profiles/profile_list.html'
@@ -332,7 +328,6 @@ class ProfileListView(ListView):
         context["con_receiver"] = con_receiver
         context["con_sender"] = con_sender
         return context
-
 
 
 def send_connection(request):
@@ -446,6 +441,6 @@ def update_rating(request, user_id):
             return redirect('/')
 
     context = {
-        'form':form,
+        'form': form,
     }
-    return render(request,'profiles/rating_update.html',context)
+    return render(request, 'profiles/rating_update.html', context)

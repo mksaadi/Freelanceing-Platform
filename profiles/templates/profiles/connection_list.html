@@ -17,6 +17,10 @@
                             <a href="{% url 'ProfileDetailView' item.id %}">
                                <button class="ui primary button">See Profile</button>
                                  </a>
+                                <a href="{% url 'chat:chatroom' item.id %}">
+                                        <button class="ui secondary button">Chat</button>
+                                 </a>
+
 
                          <form action="{%url "remove_connection" %}" class="ui form" method="POST">
                                 {% csrf_token %}

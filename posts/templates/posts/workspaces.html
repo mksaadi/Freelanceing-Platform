@@ -6,6 +6,7 @@
 <br>
 <br>
 <br>
+{% if profile.is_client%}
    <div class="ui grid">
         {% for job in jobs %}
             <div class="ui segment">
@@ -19,8 +20,10 @@
                         <div class="thirteen wide column">
                                 <p>Title : {{job.title}} </p>
                                <p>Name : {{job.description}} </p>
-                            <a href="">
-                                 <button class="ui primary button">WorkSpace</button>
+                             <p>Freelancer : {{job.winner.user}}</p>
+
+                            <a href="{% url 'chat:chatroom' job.winner.id %}">
+                                 <button class="ui primary button">Chat</button>
                             </a>
                             <br>
                             </div>
@@ -29,6 +32,35 @@
                 </div>
             </div>
       {% endfor %}
+   </div>
+{% else %}
+        <div class="ui grid">
+        {% for job in jobs %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        {% if job.image%}
+                        <div class="five wide column">
+                            <img class="ui medium  image " src="{{job.image.url}}">
+                        </div>
+                        {% endif %}
+                        <div class="thirteen wide column">
+                                <p>Title : {{job.title}} </p>
+                               <p>Name : {{job.description}} </p>
+                             <p>Client : {{job.author.user}}</p>
+
+                            <a href="{% url 'chat:chatroom' job.author.id %}">
+                                 <button class="ui primary button">Chat</button>
+                            </a>
+                            <br>
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+      {% endfor %}
+
+ {% endif %}
    </div>
 
 

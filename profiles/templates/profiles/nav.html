@@ -17,9 +17,14 @@
 
        {% endif %}
 
-    <a href="{% url 'posts:workspaces' %}" class="item">
-      <i class="mail icon orange" ></i> Messages
-    </a>
+     <div class="ui simple dropdown item">
+      Messages
+      <i class="dropdown icon blue"></i>
+      <div class="menu">
+        <a href="{% url 'posts:workspaces' %}" class="item"><i class="edit icon orange"></i> Work </a>
+        <a href="{% url 'connection_list' %}" class="item"><i class="plus icon red"></i> Connections</a>
+      </div>
+    </div>
       <a href="{% url 'connection_request_view' %}" class="item">
       <i class="bell icon red"></i> Notifications
     </a>
