@@ -105,7 +105,7 @@ class Profile(models.Model):
     # for client
     employees = models.ManyToManyField(User, blank=True,related_name='experienced_client')
     spending = models.PositiveIntegerField(default=0, blank=True)
-    company = models.CharField(max_length=20)
+    company = models.CharField(max_length=20,blank=True)
     objects = ProfileManager()
 
     def get_absolute_url(self):

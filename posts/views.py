@@ -1,5 +1,5 @@
 from django.shortcuts import render ,redirect,reverse
-from .models import Post,Like,Comment, Job , JobRequest,Message
+from .models import Post,Like,Comment, Job , JobRequest,Message, JobAppointment
 from profiles.models import Profile , ConnectionRequest, Rating
 from .forms import PostModelForm, CommentModelForm , JobModelForm , AppointmentForm
 from django.views.generic import UpdateView, DeleteView, DetailView, View
@@ -12,6 +12,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import humanize
 # Create your views here.
 from django.http import JsonResponse
+
+
+
 
 def post_list_view(request):
     profile = Profile.objects.get(user=request.user)
@@ -48,6 +51,7 @@ def post_list_view(request):
         'comment_added': comment_added,
         'post_added': post_added,
         'jobs': jobs,
+
     }
     return render(request, 'posts/main.html', context)
 
@@ -179,12 +183,14 @@ def approve_job_request(request):
             sender_.clients.add(receiver_.user)
             job.applicants.remove(sender_)
             job.available = False
+            appointment_letter = JobAppointment.objects.create(sender=job.author, receiver=job.winner, job=job, message= "Congratulations")
+            appointment_letter.save()
             receiver_.save()
             sender_.save()
             job_request.save()
             job.save()
             job_request.delete()
-            return  redirect('connection_request_view')
+            return redirect('connection_request_view')
     return redirect('connection_request_view')
 
 
@@ -237,15 +243,16 @@ def workspaces(request):
 
     profile = Profile.objects.get(user=request.user)
     if profile.is_freelancer:
-        jobs = Job.objects.filter(winner=profile)
+        jobs = Job.objects.filter(winner=profile, available=False)
     else:
-        jobs = Job.objects.filter(author=profile)
+        jobs = Job.objects.filter(author=profile, available=False)
+
 
     context = {
         'jobs': jobs,
-        'profile':profile,
+        'profile': profile,
     }
-    return render(request,'posts/workspaces.html',context)
+    return render(request, 'posts/workspaces.html', context)
 
 # message view
 

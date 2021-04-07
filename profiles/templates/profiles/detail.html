@@ -13,6 +13,7 @@
                      Posts
                      <div class="ui label"> {{object.get_posts_no}}</div>
                  </div>
+                  {% if object.is_freelancer %}
                   <div class="item">
                      Rating :
                                {% if not not_rated%}
@@ -24,6 +25,7 @@
                                {%endif%}
 
                  </div>
+                  {% endif %}
                    <div class="item">
                           <a href="{% url 'all_ratings' receiver_id %}">See all ratings </a>
                   </div>

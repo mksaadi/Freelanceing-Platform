@@ -3,13 +3,15 @@
 {% block content %}
  <h1>Create an account</h1>
  <p>Please, sign up using the following form:</p>
-
- <form id="personForm" enctype="multipart/form-data" class="ui form " method="post" data-skills-url="{% url 'load_skills' %}" novalidate >
+<div class="ui segment ">
+<form id="personForm" enctype="multipart/form-data" class="ui form " method="post" data-skills-url="{% url 'load_skills' %}" novalidate >
  {% csrf_token %}
   {{user_form.as_p}}
   {{profile_form.as_p}}
    <button class="ui button primary">Register</button>
  </form>
+</div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script>
     $("#id_work_area").change(function () {

@@ -11,7 +11,7 @@ from django.views.generic import ListView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.models import User
 from django.db.models import Q
 from posts.forms import PostModelForm, JobModelForm, CommentModelForm
-from posts.models import Job, Post, Comment, JobRequest
+from posts.models import Job, Post, Comment, JobRequest, JobAppointment
 from django.urls import reverse_lazy
 
 
@@ -41,7 +41,11 @@ def dashboard(request):
     profile = Profile.objects.get(user=request.user)
     qs = Post.objects.filter(author=profile)
     connections = Profile.objects.get_all_friends_profile(request.user)
-    all_posts = Post.objects.all()
+    if 'search_keyword' in request.GET:
+        q = request.GET['search_keyword']
+        all_posts = Post.objects.filter(content__icontains=q)
+    else:
+        all_posts = Post.objects.all()
     all_jobs = Job.objects.all()
     related_jobs = []
     connected_posts = []
@@ -226,6 +230,7 @@ def connection_request_view(request):
     jobs = Job.objects.filter(author=profile)
     job_requests = JobRequest.objects.filter(receiver=profile, status='applied')
     connections_requests = list(map(lambda x: x.sender, connections_requests))
+    appointment_letters = JobAppointment.objects.filter(receiver=profile)
     is_empty = False
     if len(connections_requests) == 0:
         is_empty = True
@@ -236,6 +241,7 @@ def connection_request_view(request):
         'is_empty': is_empty,
         'jobs': jobs,
         'job_requests': job_requests,
+        'appointment_letters': appointment_letters
     }
     return render(request, 'profiles/my_invites.html', context)
 

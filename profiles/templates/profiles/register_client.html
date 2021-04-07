@@ -3,7 +3,7 @@
 {% block content %}
  <h1>Create an account</h1>
  <p>Please, sign up using the following form:</p>
-
+<div class="ui segment">
  <form enctype="multipart/form-data" class="ui form " method="post">
 
   {% csrf_token %}
@@ -11,4 +11,6 @@
   {{profile_form.as_p}}
  <button class="ui button primary">Register</button>
  </form>
+</div>
+
 {% endblock %}

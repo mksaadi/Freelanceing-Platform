@@ -132,7 +132,10 @@ def post_save_add_applicants(sender, instance, created, **kwargs):
 
 
 
+
 class JobAppointment(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='appointment_sender', null=True)
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='appointment_receiver', null=True)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     message = models.CharField(max_length=20)
     updated = models.DateTimeField(auto_now=True)

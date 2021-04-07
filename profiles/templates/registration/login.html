@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Log-in(registration){% endblock %}
+
+
+
 {% block content %}
+
 
  {% if form.errors %}
  <p>
@@ -17,15 +21,13 @@ account <a href="{% url "register" %}">register here</a></p>
  </div>
 
  {% endif %}
- <div class="login-form">
-
+ <div class=" ui segment login-form">
      <form  class="ui form" action="{% url 'login' %}"   method="POST">
-
  {% csrf_token %}
-      {{ form.as_p }}
+      {{ form }}
        {{ form.media.js }}
          <input type="hidden" name="next" value="{{ next }}" />
- <button class="ui inverted green button"> Login</button>
+ <button class="ui   button"> Login</button>
 
 
 
@@ -33,4 +35,6 @@ account <a href="{% url "register" %}">register here</a></p>
 
  <<a href="{% url "password_reset" %}">Reset Password </a>
  </div>
-{% endblock %}
+
+
+{% endblock content %}

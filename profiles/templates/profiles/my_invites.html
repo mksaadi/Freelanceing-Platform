@@ -7,7 +7,7 @@
         <h3>No New Connection Request</h3>
     {%endif%}
 </div>
-
+<p> Connection Requests :</p>
   <ul>
       {% for item in connections_requests %}
          <div class="ui segment">
@@ -48,66 +48,99 @@
          </div>
       {% endfor %}
   </ul>
-
+        {% if profile.is_client %}
 
                 <ul>
-      {% for job_request in job_requests %}
-                    <div class="ui segment">
-                         <p>Applications for " {{job_request.job.title}}</p>
-                    </div>
+                      {% for job_request in job_requests %}
+                                    <div class="ui segment">
+                                         <p>Applications for " {{job_request.job.title}}</p>
+                                    </div>
 
-         <div class="ui segment">
-            <div class="ui grid">
-                <div class="row">
+                         <div class="ui segment">
+                            <div class="ui grid">
+                                <div class="row">
 
-                    <div class="three wide column">
-                        <img  class="ui small image" src="{{job_request.sender.dp.url}}">
-                    </div>
-                     <div class="thirteen wide column">
-                            <h3>{{job_request.sender.user}}</h3>
-                         <p>{{job_request.sender.bio}}</p>
-                         <br>
-                         <br>
-                         <br>
+                                    <div class="three wide column">
+                                        <img  class="ui small image" src="{{job_request.sender.dp.url}}">
+                                    </div>
+                                     <div class="thirteen wide column">
+                                            <h3>{{job_request.sender.user}}</h3>
+                                         <p>{{job_request.sender.bio}}</p>
+                                         <br>
+                                         <br>
+                                         <br>
 
-                         <div class="ui grid">
-                             <a href="{% url 'ProfileDetailView' job_request.sender.id %}">
-                             <button class="ui primary button">See Profile</button>
-                         </a>
-                          <form action="{% url 'posts:approve_job_request'%}" class="ui form" method="POST">
-                                     {% csrf_token %}
-                             <input type="hidden" name="request_pk" value="{{job_request.pk}}">
-                                            <button class="ui positive  button">
-                                            <i class="user plus icon"></i>
-                                           Approve
-                                        </button>
+                                         <div class="ui grid">
+                                             <a href="{% url 'ProfileDetailView' job_request.sender.id %}">
+                                             <button class="ui primary button">See Profile</button>
+                                         </a>
+                                          <form action="{% url 'posts:approve_job_request'%}" class="ui form" method="POST">
+                                                     {% csrf_token %}
+                                             <input type="hidden" name="request_pk" value="{{job_request.pk}}">
+                                                            <button class="ui positive  button">
+                                                            <i class="user plus icon"></i>
+                                                           Approve
+                                                        </button>
 
-                              </form>
+                                              </form>
 
-                             <form action="" class="ui form" method="POST">
-                                     {% csrf_token %}
-                                    <input type="hidden" name="applicant_id" value="{{job_request.sender..id}}">
-                                            <button class="ui Negative red  button">
-                                            <i class="user minus icon"></i>
-                                           Decline
-                                        </button>
+                                             <form action="" class="ui form" method="POST">
+                                                     {% csrf_token %}
+                                                    <input type="hidden" name="applicant_id" value="{{job_request.sender..id}}">
+                                                            <button class="ui Negative red  button">
+                                                            <i class="user minus icon"></i>
+                                                           Decline
+                                                        </button>
 
-                              </form>
-                             <br>
+                                              </form>
+                                             <br>
+                                         </div>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
                          </div>
 
+                       {% endfor %}
+                    </ul>
+          {% endif %}
 
 
-                    </div>
-                </div>
-            </div>
-         </div>
+     {% if profile.is_freelancer %}
 
-       {% endfor %}
-  </ul>
+             <p>Appointment Letters </p>
+                <ul>
+                      {% for appointment in appointment_letters %}
+
+                        <div class="ui message">
+                          <div class="header">
+                            Congratulations!!!
+                          </div>
+                          <p> {{appointment.sender.user}} has chosen you for
+                             job " {{appointment.job.title }} ".
+                          </p>
+                        </div>
+
+
+                       {% endfor %}
+                    </ul>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+      {% endif %}
 
 
 
