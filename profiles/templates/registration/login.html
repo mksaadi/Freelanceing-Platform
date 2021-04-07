@@ -23,13 +23,11 @@ account <a href="{% url "register" %}">register here</a></p>
  {% endif %}
  <div class=" ui segment login-form">
      <form  class="ui form" action="{% url 'login' %}"   method="POST">
- {% csrf_token %}
+        {% csrf_token %}
       {{ form }}
        {{ form.media.js }}
          <input type="hidden" name="next" value="{{ next }}" />
  <button class="ui   button"> Login</button>
-
-
 
  </form>
 

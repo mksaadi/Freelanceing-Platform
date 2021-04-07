@@ -199,7 +199,7 @@ class ConnectionRequest(models.Model):
     ]
     sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
-    status = models.CharField(max_length=8,choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
     created = models.DateTimeField(auto_now=True)
     updated = models.DateTimeField(auto_now_add=True)
 
